@@ -10,7 +10,13 @@ class Geo::PolygonDataBuilderService < ServiceBase
   def perform
 
     header = @rows.shift
+
+    loc_idx = nil
     loc_idx = header.index('KEY_CODE') # KEY_CODEの入ったカラムのインデクス
+
+    if loc_idx.nil?
+      loc_idx = 0
+    end
 
     # 集計に使用するカラムのインデクスを取得する
     count_idx = nil
@@ -21,8 +27,9 @@ class Geo::PolygonDataBuilderService < ServiceBase
 
     # 集計カラム名が見つからない場合はエラー
     if count_idx.nil?
-      message = '集計カラム不明エラー' % []
-      raise ServiceError, message
+      # message = '集計カラム不明エラー' % []
+      # raise ServiceError, message
+      count_idx = 1
     end
 
     ################################
@@ -58,7 +65,7 @@ class Geo::PolygonDataBuilderService < ServiceBase
 
     # generate a new area info into a array (s[]).
     # there are single KEY_CODE area in the new area info.
-    # (no overlap area in with regard to KEY_CODE)
+    # (no overlap area with regard to KEY_CODE)
 
     i = -1
     j = -1
@@ -93,16 +100,8 @@ class Geo::PolygonDataBuilderService < ServiceBase
 
       header.each_with_index do |field, idx|
 
-        if ( ( field == 'CITYNAME' ) ||
-             ( field == 'NAME'     ) ||
-             ( field == '総人口'    ) ||
-             ( field == '男'       ) ||
-             ( field == '女'       ) ||
-             ( field == '世帯総数'  ) ) then
-
-          feature[:properties][field] = loc_data[idx].to_s
+        feature[:properties][field] = loc_data[idx].to_s
           
-        end
       end
 
       # 地図塗り分け用の値作成
@@ -114,8 +113,6 @@ class Geo::PolygonDataBuilderService < ServiceBase
       feature[:properties].delete(:'KEN_NAME')
       feature[:properties].delete(:'GST_NAME')
       feature[:properties].delete(:'CSS_NAME')
-      feature[:properties].delete(:'MOJI')
-      feature[:properties].delete(:'HYOSYO')
     end
 
     @geojson
