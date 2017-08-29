@@ -1,0 +1,187 @@
+<div class="wrapper">
+
+  <div class="header">
+  </div>
+
+  <div class="mobile_header">
+    ダッシュボード
+    <span id="menu_open"><i class="fa fa-bars fa-2x"></i></span>
+    <span id="menu_home"><a href="<%= Settings.home.url %>"><i class="fa fa-home fa-2x"></i></a></span>
+  </div>
+
+  <div class="content">
+
+    <div id="menu_box" class="menu_box">
+      <div class="menu_header">
+        <span id="menu_close"><i class="fa fa-close fa-2x"></i></span>
+      </div><!-- /div menu_header -->
+      <div class="menu_content">
+      <!-- ko with:menuViewModel -->
+        <img src="<%= asset_path('logomark.png') %>">
+
+        <h2>1. 組織を選んでください</h2>
+        <div class="select_list">
+          <select class="organization_select"
+                  class="form-control"
+                  data-bind="options:lists,
+                            optionsText:'name',
+                            value:listSelected,
+                            optionsCaption:'選択してください'">
+          </select>
+        </div>
+
+        <h2>2. グループを選んでください</h2>
+        <div class="select_list group_list">
+          <ul>
+          <!-- ko foreach:groups -->
+          <li>
+            <label>
+            <input type="checkbox" name="group"
+                  data-bind="checked:$parent.groupNames,
+                            value:name">
+            <span data-bind="text:name"></span>
+            </label>
+          </li>
+          <!-- /ko -->
+          </ul>
+        </div>
+
+        <h2>3. データを選んでください</h2>
+        <br>
+        <h3>地図の塗り分け</h3>
+        <div class="select_list polygon_list">
+          <ul>
+          <!-- ko foreach:polygons -->
+          <li data-bind="visible: visible">
+            <label>
+            <input type="radio" name="polygon"
+                  data-bind="checked:$parent.polygonId,
+                            value:id,
+                            click:click">
+            <span data-bind="text:name"></span>
+            </label>
+          </li>
+          <!-- /ko -->
+          </ul>
+        </div>
+        <h3>位置情報</h3>
+        <div class="select_list point_list">
+          <ul>
+          <!-- ko foreach:points -->
+          <li data-bind="visible: visible">
+            <label>
+            <input type="checkbox" name="points"
+                  data-bind="checked:checked,
+                            value:id,
+                            click:click">
+            <span data-bind="text:name"></span>
+            </label>
+          </li>
+          <!-- /ko -->
+          </ul>
+        </div>
+
+        <div class="menu_links">
+          <ul>
+            <li><a class="inline" href="#source">使用データについて</a></li>
+            <li><a class="inline" href="#readme">ダッシュボードの使い方について</a></li>
+            <li><a href="<%= Settings.home.url %>">ホームに戻る</a></li>
+          </ul>
+        </div>
+
+      <!-- /ko -->
+      </div><!-- /div menu_content -->
+
+      <div class="menu_footer">
+      </div><!-- /div menu_footer -->
+
+    </div><!-- /div menu_box -->
+
+
+    <div class="map_box">
+      <div class="map_header">
+        <h2>選択しているデータセット</h2>
+        <div class="selected">
+        <!-- ko with:menuViewModel -->
+          <!-- ko with:polygonSelected -->
+          地図の塗り分け：<span data-bind="text:$data.name"></span>
+          <!-- /ko -->
+          <ul>
+          <!-- ko foreach:pointSelected -->
+            <li>
+              <img class="marker" data-bind="attr:{src:'<%= asset_path('marker') %>/p'+markeridx()+'.png'}">
+              <span data-bind="text:name"></span>
+            </li>
+          <!-- /ko -->
+          </ul>
+        <!-- /ko -->
+        </div>
+        <div class="range"><img src="<%= asset_path('range.png') %>"></div>
+      </div><!-- /div map_header -->
+
+      <div id="map_content" class="map_content"></div>
+
+      <div class="map_footer">
+      <!-- ko with:mapViewModel -->
+        <div data-bind="visible:visible">
+          <p>
+          <span data-bind="text:startAddress"></span> からの距離は、
+          およそ <span data-bind="text:distance"></span>、
+          <span data-bind="text:directions"></span> で
+          <span data-bind="text:duration"></span> かかります。
+          </p>
+        </div>
+      <!-- /ko -->
+      </div><!-- /div map_footer -->
+
+    </div><!-- /div map_box -->
+
+  </div><!-- /div content -->
+
+</div><!-- /div wrapper -->
+
+
+<div style="display: none;">
+<section class="inline_content" id="source">
+<h2>地図の塗り分けデータについて</h2>
+<div class="entry">
+  <p>地図の塗り分けデータは、以下のコンテンツを加工して利用しています。</p>
+  <ul>
+    <li>出典：政府統計の総合窓口(e-Stat)（<a target="_blank" rel="noopener noreferrer" href="http://www.e-stat.go.jp/">http://www.e-stat.go.jp/</a>）</li>
+    <li>出典：「平成２２年国勢調査（小地域）」を加工して作成</li>
+  </ul>
+</div>
+</section>
+</div>
+
+<div style="display: none;">
+<section class="inline_content" id="readme">
+<h2>データ表示</h2>
+<div class="entry">
+  <p>本ダッシュボードでは組織毎のデータを任意に掛け合わせて表示することが可能です。</p>
+  <p>データには「地図の塗り分け」データと「位置情報」データの２つがあります。</p>
+  <p>「地図の塗り分け」データを選択することで、既定区域ごとに値の大小を色分けして表示することが可能です。</p>
+  <p>「位置情報」データは、データに含まれる地理情報(緯度・経度)を基に地図上にピンをたてることが可能で、</p>
+  <p>最大5つまで同時に表示させることが可能です。</p>
+  <br>
+  <p>=== データ表示の操作手順 ===</p>
+  <ol>
+    <li>組織を選択してください</li>
+    <li>表示するデータのグループを選択してください</li>
+    <li>表示したいデータ(地図の塗り分け, 位置情報)を選択してください</li>
+  </ol>
+</div>
+<h2>ルート検索</h2>
+<div class="entry">
+  <p>本ダッシュボードでは任意の位置情報データまでのルート検索をすることが可能です。</p>
+  <br>
+  <p>=== ルート検索の操作手順 ===</p>
+  <ol>
+    <li>「位置情報」データを選択してください</li>
+    <li>地図上の任意のピンを選択してください <br>⇒データの詳細情報が吹き出し表示されます</li>
+    <li>任意のピンを選択した状態(吹き出しが表示されている状態)で、地図上の任意の場所で右クリックしてください <br><b>※スマートフォンやタブレット等の場合は、ロングタップ(長押し)してください</b></li>
+    <li>「徒歩でのルート」または「車でのルート」を選択してください <br>2.で選択したピンの場所までのルートが青線で表示され、画面一番下に距離と所要時間が表示されます</li>
+  </ol>
+</div>
+</section>
+</div>

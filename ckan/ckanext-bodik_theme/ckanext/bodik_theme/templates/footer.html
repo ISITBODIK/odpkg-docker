@@ -1,0 +1,78 @@
+<!-- Powerdエリア -->
+<div id="powerd">
+<div class="powerd-inner">
+
+<!-- フッターウィジェット -->
+<div class="row">
+<article class="half">
+<div id="pwbox">
+</div>
+</article>
+<article class="fifth">
+<div id="pwbox">
+  <div id="text-3" class="widget widget_text"><div class="sidebar-title2">POWERED BY</div><div class="textwidget"><a href="http://ckan.org/" target="_blank" rel="noopener noreferrer"><img src="/images/ckan_logo.png" alt="ckan"></a>
+</div>
+    </div></div>
+</article>
+<article class="fifth">
+<div id="pwbox">
+  <div id="text-4" class="widget widget_text"><div class="sidebar-title2">POWERED BY</div><div class="textwidget"><a href="http://wordpress.org/" target="_blank" rel="noopener noreferrer"><img src="/images/wp_logo.png" alt="wordpress"></a></div>
+    </div></div>
+</article>
+</div>
+<!-- / フッターウィジェット -->
+<div class="clear"></div>
+
+</div>
+</div>
+<!-- / Powerdエリア -->
+
+
+<!-- フッターエリア -->
+<footer id="footer">
+<div class="footer-inner">
+
+<!-- フッターウィジェット -->
+<div class="row">
+<article class="quarter">
+<div id="topbox">
+<!--
+<div id="nav_menu-2" class="widget widget_nav_menu"><div class="sidebar-title">Navigation</div><div class="menu-footnav-container"><ul id="menu-footnav" class="menu">
+  <li class="menu-item"><a href="{{ h.odpkg_main_web() }}">ホーム</a></li>
+  <li class="menu-item"><a href="{{ h.url_for(controller='package', action='search') }}">データセット</a></li>
+  <li class="menu-item"><a href="{{ h.url_for(controller='organization', action='index') }}">組織</a></li>
+  <li class="menu-item"><a href="{{ h.odpkg_main_web() }}/group/">グループ</a></li>
+  <li class="menu-item"><a href="{{ h.odpkg_main_web() }}/info/">お知らせ</a></li>
+  <li class="menu-item"><a href="{{ h.odpkg_main_web() }}/tos/">利用規約</a></li>
+  <li class="menu-item"><a href="{{ h.odpkg_main_web() }}/about/">サイトについて</a></li>
+  <li class="menu-item"><a href="{{ h.odpkg_main_web() }}/contact/">お問い合わせ</a></li>
+  <li class="menu-item"><a href="{{ h.odpkg_dashboard() }}">ビジュアライズ</a></li>
+</ul></div></div>
+-->
+</div>
+</article>
+
+<article class="quarter">
+<div id="topbox">
+</div>
+</article>
+
+<article class="half">
+<div id="topbox">
+</div>
+</article>
+
+</div>
+<!-- / フッターウィジェット -->
+<div class="clear"></div>
+
+</div>
+
+  {% block footer_debug %}
+    {% if g.debug %}
+      {% include 'snippets/debug.html' %}
+    {% endif %}
+  {% endblock %}
+
+</footer>
+<!-- / フッターエリア -->

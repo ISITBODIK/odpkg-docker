@@ -1,0 +1,25 @@
+#home:
+#  url: [カタログサイトのURL]
+#ckan:
+#  api: [CKAN APIのURL]
+#analytics:
+#  id: [GoogleAnalyticsのトラッキングID]
+#maps:
+#  key: [GoogleMapsのAPIキー]
+#organizations:
+#  - id: [組織のID]
+#    name: [組織名]
+#    maps:
+#      json: [GeoJSONファイル名]
+#      lat: [初期表示時の緯度]
+#      lng: [初期表示時の経度]
+#      zoom: [初期表示時のマップ拡大率]
+home:
+  url: https://__WP_URL__
+ckan:
+  api: http://ckan:8080/api/3
+analytics:
+  id: __GOOGLE_ANALYTICS_ID__
+maps:
+  key: __GOOGLE_MAP_KEY__
+organizations: []

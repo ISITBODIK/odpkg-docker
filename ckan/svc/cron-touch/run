@@ -1,0 +1,5 @@
+#!/bin/sh
+
+sleep 1m
+/usr/bin/touch /etc/cron.d/ckan-cron
+exit

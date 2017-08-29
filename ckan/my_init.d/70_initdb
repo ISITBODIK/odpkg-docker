@@ -1,0 +1,16 @@
+#!/bin/sh
+set -eu
+
+virtualenv $CKAN_HOME
+cd $CKAN_HOME/src/ckanext-bodik_theme && $CKAN_HOME/bin/python setup.py develop
+
+"$CKAN_HOME"/bin/paster --plugin=ckan datastore set-permissions -c "${CKAN_CONFIG}/ckan.ini"
+"$CKAN_HOME"/bin/paster --plugin=ckan db init -c "${CKAN_CONFIG}/ckan.ini"
+
+expect -c "
+ spawn $CKAN_HOME/bin/paster --plugin=ckan user setpass default -c $CKAN_CONFIG/ckan.ini
+ expect \"Password:\" ;  send $PASSWORD; send \r
+ expect \"Confirm password:\" ; send $PASSWORD; send \r;
+ expect eof exit 0
+ "
+

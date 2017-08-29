@@ -1,0 +1,124 @@
+{% ckan_extends %}
+
+{% block content %}
+
+<style>
+.resource_thumbnail {
+  overflow: hidden;
+  position: relative;
+  height: 150px;
+}
+.resource_thumbnail iframe {
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+}
+.resource_thumbnail a {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+}
+</style>
+
+{% if count < h.odpkg_thumbnail_count() %}
+
+  {% set view_list = h.odpkg_resource_view_list(package) %}
+  {% if view_list and 0 < view_list|length %}
+
+    <div class="dataset-content">
+      {% block heading %}
+        <h3 class="dataset-heading">
+          {% block heading_private %}
+            {% if package.private %}
+              <span class="dataset-private label label-inverse">
+                <i class="icon-lock"></i>
+                {{ _('Private') }}
+              </span>
+            {% endif %}
+          {% endblock %}
+          {% block heading_title %}
+            {{ h.link_to(h.truncate(title, truncate_title), h.url_for(controller='package', action='read', id=package.name)) }}
+          {% endblock %}
+          {% block heading_meta %}
+            {% if package.get('state', '').startswith('draft') %}
+              <span class="label label-info">{{ _('Draft') }}</span>
+            {% elif package.get('state', '').startswith('deleted') %}
+              <span class="label label-important">{{ _('Deleted') }}</span>
+            {% endif %}
+            {{ h.popular('recent views', package.tracking_summary.recent, min=10) if package.tracking_summary }}
+          {% endblock %}
+        </h3>
+      {% endblock %}
+      {% block banner %}
+        {% if banner %}
+          <span class="banner">{{ _('Popular') }}</span>
+        {% endif %}
+      {% endblock %}
+      {% block notes %}
+        {% if notes %}
+          <div>{{ notes|urlize }}</div>
+        {% else %}
+          <p class="empty">{{ _("This dataset has no description") }}</p>
+        {% endif %}
+      {% endblock %}
+    </div>
+
+    {% set view = view_list[0] %}
+    {% if (view['view_type'] == "basicgrid") or (view['view_type'] == "recline_map_view") %}
+      {%
+      set src = h.url_for(qualified=true, controller='package',
+                          action='resource_view',
+                          id=view['package_id'],
+                          resource_id=view['resource_id'],
+                          view_id=view['id'])
+      %}
+      {%
+      set url = h.url_for(controller='package',
+                          action='resource_read',
+                          id=view['package_id'],
+                          resource_id=view['resource_id'],
+                          view_id=view['id'])
+      %}
+      <div class="resource_thumbnail"><iframe src="{{ src }}" scrolling="no" frameborder="no"></iframe><a href="{{ url }}"></a></div>
+    {% endif %}
+  
+    {% block resources %}
+      {% if package.resources and not hide_resources %}
+        {% block resources_outer %}
+          <ul class="dataset-resources unstyled">
+            {% block resources_inner %}
+              {% for resource in h.dict_list_reduce(package.resources, 'format') %}
+              <li>
+                <a href="{{ h.url_for(controller='package', action='read', id=package.name) }}" class="label" data-format="{{ resource.lower() }}">{{ resource }}</a>
+              </li>
+              {% endfor %}
+            {% endblock %}
+          </ul>
+        {% endblock %}
+      {% endif %}
+    {% endblock %}
+    
+    プレビュー
+    {% for view in view_list %}
+      {%
+      set url = h.url_for(controller='package',
+                          action='resource_read',
+                          id=view['package_id'],
+                          resource_id=view['resource_id'],
+                          view_id=view['id'])
+      %}
+      <a href="{{ url }}"><i class="icon icon-{{ h.resource_view_icon(view) }}"></i>{{ view['title'] }}</a>
+    {% endfor %}
+
+  {% else %}
+    {{ super() }}
+  {% endif %}
+
+{% else %}
+  {{ super() }}
+{% endif %}
+
+{% endblock %}

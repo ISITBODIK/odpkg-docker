@@ -1,0 +1,3 @@
+#!/bin/sh
+
+exec $CKAN_HOME/bin/paster --plugin=ckanext-harvest harvester fetch_consumer -c $CKAN_CONFIG/ckan.ini >> /var/log/apache2/ckan_harvest_fetch_consumer.log

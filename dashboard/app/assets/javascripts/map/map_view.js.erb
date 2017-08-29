@@ -1,0 +1,395 @@
+var MapView = (function(){
+  'use strict';
+
+  var map = null;
+  var contextMenu = null;
+  var directionsDisplay = null;
+
+  var infoWindow = new google.maps.InfoWindow();
+  var directionsService = new google.maps.DirectionsService();
+  //var geocoder = new google.maps.Geocoder();
+
+  var viewModel = null;
+  var fillColors = ['#66cc00','#ffff00','#ffcc00','#ff6600','#ff3300','#ff3300'];
+
+
+  // マップ表示スタイル
+  var mapStyle = function(feature) {
+    var geometryType = feature.getGeometry().getType();
+    if ('Point' == geometryType) {
+      var __markeridx = feature.getProperty('__markeridx');
+      feature.removeProperty('__markeridx');
+      return {
+        icon: "<%= asset_path('marker') %>" + '/p'+ __markeridx +'.png',
+        zIndex: __markeridx
+      };
+    } else if (('Polygon' == geometryType) || ('MultiPolygon' == geometryType)) {
+      var range = feature.getProperty('__range');
+      feature.removeProperty('__range');
+      feature.removeProperty('__name');
+      return {
+        fillColor: fillColors[range],
+        fillOpacity: 0.35,
+        strokeColor: fillColors[range],
+        strokeOpacity: 0.8,
+        strokeWeight: 2,
+        zIndex: range
+      };
+    }
+  };
+
+
+  var longPressTimeout = null;
+  var isMouseDown = false;
+
+  // マウスダウンイベント
+  var mapMouseDown = function (event) {
+
+    // コンテキストメニュー表示時はメニューを消す
+    if (contextMenu.menuVisible()) {
+      contextMenu.menuOff();
+      return;
+    }
+
+    // 選択したfeatureの情報
+    var geometryType = '';
+    if (event.feature) {
+      var mouseEvent = null;
+      $.each(event, function(key, val) {
+        if (val && val.toString().match(/MouseEvent/)) {
+          mouseEvent = val; return false;
+        }
+      });
+      var feature = event.feature;
+      geometryType = feature.getGeometry().getType();
+      if (mouseEvent && (0 != mouseEvent.button)) {
+        return;
+      }
+    }
+
+    // マウスダウン判定
+    isMouseDown = true;
+    // 長押し判定タイマー
+    longPressTimeout = setTimeout(function(){
+      if (longPressTimeout) {
+        contextMenu.menuOn(event.latLng);
+        // マウスダウン判定を解除する    
+        isMouseDown = false;
+        // 長押し判定を解除する    
+        longPressTimeout = null;
+      }
+    }, 700);
+  };
+
+  var cancelLongPress = function(event) {
+    // マウスダウン判定を解除する
+    isMouseDown = false;
+    // 長押し判定を解除する
+    if (longPressTimeout) {
+      clearTimeout(longPressTimeout);
+      longPressTimeout = null;
+    }
+  };
+
+  // マップアップイベント
+  var mapMouseUp = function(event) {
+
+    // 選択したfeatureの情報
+    var geometryType = '';
+    if (event.feature) {
+      var mouseEvent = null;
+      $.each(event, function(key, val) {
+        if (val && val.toString().match(/MouseEvent/)) {
+          mouseEvent = val; return false;
+        }
+      });
+      var feature = event.feature;
+      geometryType = feature.getGeometry().getType();
+      if (mouseEvent && (0 != mouseEvent.button)) {
+        return;
+      }
+    }
+
+    // マウスダウンが解除されていたら終了する
+    if (false == isMouseDown) {
+      return;
+    }
+
+    // マウスダウン判定を解除する
+    isMouseDown = false;
+    // 長押し判定を解除する
+    if (longPressTimeout) {
+      clearTimeout(longPressTimeout);
+      longPressTimeout = null;
+    }
+    
+    // geometryTypeが無い場合は以降の処理は行わない
+    if ('' == geometryType) {
+      return;
+    }
+
+    var list = $('<ul>');
+    feature.forEachProperty(function(val, key){
+      var li = $('<li>').text(key + ': ' + val);
+      list.append(li);
+    });
+
+    var html = list.get(0).outerHTML;
+    infoWindow.setContent(html);
+    infoWindow.setPosition(event.latLng);
+
+    var infoWindowOptions = {};
+    if ('Point' == geometryType) {
+      infoWindowOptions.pixelOffset = new google.maps.Size(0, -30);
+    } else {
+      infoWindowOptions.pixelOffset = new google.maps.Size(0, 0);
+    }
+    infoWindow.setOptions(infoWindowOptions);
+
+    infoWindow.open(map);
+  };
+
+  // マップ右クリックイベント
+  var mapRightClick = function(event) {
+    contextMenu.menuOn(event.latLng);
+  };
+
+
+  // 情報ウィンドウを閉じる
+  var windowClose = function() {
+    infoWindow.setPosition(null);
+    clearDirectionsDisplay();
+  };
+
+  // マップ表示のクリア
+  var clearMapView = function() {
+    infoWindow.close();
+    clearDirectionsDisplay();
+  };
+
+  // 経路表示のクリア
+  var clearDirectionsDisplay = function() {
+    if (directionsDisplay != null) {
+      directionsDisplay.setMap(null);
+      directionsDisplay = null;
+    }
+    viewModel.visible(false);
+  };
+
+
+  // コンテキストメニュー
+  var MapContextMenu = function(map, list) {
+    var self = this;
+
+    self.map = map;
+    self.list = list;
+    self.menu = null;
+    self.setMap(self.map);
+
+    self.draw = function() {};
+
+    self.onAdd = function(){
+      self.menu = createMenu();
+      stopEvent();
+
+      self.getPanes().floatPane.appendChild( self.menu.get(0) );
+      self.menuOff();
+
+      google.maps.event.addListener(map, 'mouseout', function(event) {
+        self.menuOff();
+      });
+    };
+
+    var createMenu = function() {
+      var menu = $('<ul>')
+          .css('list-style', 'none')
+          .css('position', 'absolute')
+          .css('background-color', '#ffffff')
+          .css('color', '#000000')
+          .css('width', '160px')
+          .css('font-size', '12px')
+          .css('padding', '0')
+          .css('margin', '0')
+          .css('border', '1px solid #cccccc')
+          .css('z-index', '1000');
+
+      $.each(self.list, function(idx, val) {
+        var item = createMenuItem(val.text, val.action);
+        menu.append(item);
+      });
+
+      return menu;
+    };
+
+    var createMenuItem = function(text, action) {
+      var item = $('<li>')
+          .css('padding', '12px')
+          .text(text);
+      google.maps.event.addDomListener(item.get(0), 'mouseover', function(event) {
+        item.css('cursor', 'pointer').css('backgroundColor', '#d8edf5');
+      });
+      google.maps.event.addDomListener(item.get(0), 'mouseout', function(event) {
+        item.css('cursor', 'default').css('backgroundColor', '#ffffff');
+      });
+      google.maps.event.addDomListener(item.get(0), 'click', function(event) {
+        action({ latLng: self.menu.data('latLng') });
+        self.menuOff();
+      });
+      return item;
+    };
+
+    self.menuOn = function (latLng) {
+      setMenuPosition(latLng);
+      self.menu.data('latLng', latLng);
+      self.menu.show();
+    };
+
+    self.menuOff = function () {
+      self.menu.hide();
+    };
+
+    self.menuVisible = function() {
+      if ('none' == self.menu.css('display')) {
+        return false;
+      } else {
+        return true;
+      }
+    };
+
+    var setMenuPosition = function(latLng) {
+      var point = self.getProjection().fromLatLngToDivPixel(latLng);
+      if (point.x + self.menu.offsetWidth > self.map.getDiv().offsetWidth) {
+          point.x = point.x - self.menu.offsetWidth;
+      }
+      if (point.y + self.menu.offsetHeight > self.map.getDiv().offsetHeight) {
+          point.y = point.y - self.menu.offsetHeight;
+      }
+      self.menu.css('left', (point.x - 80) + 'px');
+      self.menu.css('top', (point.y-44 * list.length - 4) + 'px');
+    };
+
+    var stopEvent = function() {
+      var events = [
+        'click', 'dblclick', 'rightclick',
+        'mousedown', 'mouseup', 'mousemove', 'mouseover', 'mouseout',
+        'dragstart', 'dragend', 'contextmenu'];
+      for (var i = 0, event; event = events[i]; i++) {
+        google.maps.event.addDomListener(self.menu.get(0), event, function(e) {
+          e.cancelBubble = true;
+          if (e.stopPropagation) {
+            e.stopPropagation();
+          }
+        });
+      }
+    };
+  };
+  MapContextMenu.prototype = new google.maps.OverlayView();
+
+
+  var directionsWalking = function(option) {
+    option.travelMode = google.maps.DirectionsTravelMode.WALKING;
+    option.directions = '徒歩';
+    renderDirections(option);
+  };
+
+  var directionsDriving = function(option) {
+    option.travelMode = google.maps.DirectionsTravelMode.DRIVING;
+    option.directions = '車';
+    renderDirections(option);
+  };
+
+  // 経路情報表示
+  var renderDirections = function(option) {
+
+    if (null == infoWindow.getPosition()) {
+      console.debug('infowindow closed');
+      return;
+    }
+
+    clearDirectionsDisplay();
+
+    var latLngFrom = option.latLng;
+    var latLngTo = infoWindow.getPosition();
+
+    var directionsRendererOptions = {
+      suppressMarkers :true
+    };
+    directionsDisplay = new google.maps.DirectionsRenderer(directionsRendererOptions);
+
+    var request = {
+      origin: latLngFrom,
+      destination: latLngTo,
+      travelMode: option.travelMode
+    }
+
+    directionsService.route(request, function(result, status){
+      var leg = result.routes[0].legs[0];
+
+      var start_address = leg.start_address.replace(/^(日本, 〒[\d\s-]+)/, '') ;
+
+      viewModel.startAddress(start_address);
+      viewModel.endAddress(leg.end_address);
+      viewModel.distance(leg.distance.text);
+      viewModel.duration(leg.duration.text);
+      viewModel.directions(option.directions);
+      viewModel.visible(true);
+
+      directionsDisplay.setDirections(result);
+      directionsDisplay.setMap(map);
+    });
+  };
+
+  // ビューモデル
+  var ViewModel = function() {
+    var self = this;
+    self.visible = ko.observable(false);
+    self.startAddress = ko.observable();
+    self.endAddress = ko.observable();
+    self.distance = ko.observable();
+    self.duration = ko.observable();
+    self.directions = ko.observable();
+  };
+
+  var MapView = {
+    init: function(params) {
+      viewModel = new ViewModel();
+
+      var mapOptions = {
+        zoom: 15,
+        center: new google.maps.LatLng(33.595333, 130.362000),
+        mapTypeId: google.maps.MapTypeId.ROADMAP
+      };
+
+      map = new google.maps.Map(params.map.get(0), mapOptions);
+      map.data.setStyle(mapStyle);
+      map.data.addListener('mousedown', mapMouseDown);
+      map.data.addListener('mouseup', mapMouseUp);
+      map.data.addListener('rightclick', mapRightClick);
+      google.maps.event.addListener(map, 'drag', cancelLongPress);
+      google.maps.event.addListener(map, 'zoom_changed', cancelLongPress);
+      google.maps.event.addListener(map, 'mousedown', mapMouseDown);
+      google.maps.event.addListener(map, 'mouseup', mapMouseUp);
+      google.maps.event.addListener(map, 'rightclick', mapRightClick);
+      google.maps.event.addListener(infoWindow, 'closeclick', windowClose);
+
+      var menuList = [
+        { text: '徒歩でのルート', action: directionsWalking },
+        { text: '車でのルート', action: directionsDriving }
+      ];
+      contextMenu = new MapContextMenu(map, menuList);
+
+      return this;
+    },
+    map: function() {
+      return map;
+    },
+    clear: function() {
+      clearMapView();
+    },
+    viewModel: function() {
+      return viewModel;
+    }
+  };
+
+  return MapView;
+})();

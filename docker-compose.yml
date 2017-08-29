@@ -1,0 +1,89 @@
+version: '2'
+
+services:
+  ckan:
+    depends_on:
+      - db
+      - solr
+      - datapusher
+      - redis
+    build: ./ckan
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /opt/odpkg/log/ckan:/var/log/apache2
+      - /opt/odpkg/ckan/data:/var/lib/ckan
+      - ./ckan/ckanext-bodik_theme:/usr/lib/ckan/default/src/ckanext-bodik_theme
+    restart: always
+    env_file: ./odpkg.env
+
+  db:
+    build: ./postgresql
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /opt/odpkg/log/postgresql:/var/log/postgresql
+    restart: always
+    env_file: ./odpkg.env
+  
+  solr:
+    build: ./solr
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /opt/odpkg/log/solr:/opt/solr/example/logs
+    restart: always
+
+  datapusher:
+    build: ./datapusher
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /opt/odpkg/log/datapusher:/var/log/datapusher
+    restart: always
+
+  redis:
+    image: redis
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+    restart: always
+
+  wordpress:
+    depends_on:
+      - mysql
+    build: ./wordpress
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./wordpress/wp-content:/var/www/html/wp-content
+      - /opt/odpkg/log/wordpress/:/var/log/apache2 
+    restart: always
+    env_file: ./odpkg.env
+
+  mysql:
+    build: ./mysql   
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /opt/odpkg/log/mysql:/var/log/mysql
+    restart: always
+    env_file: ./odpkg.env
+
+  dashboard:
+    build: ./dashboard
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./dashboard:/dashboard
+      - /opt/odpkg/log/dashboard:/dashboard/log
+    privileged: true
+    restart: always
+    env_file: ./odpkg.env
+      
+  nginx:
+    depends_on:
+      - ckan
+      - wordpress
+      - dashboard
+    build: ./nginx
+    restart: always
+    env_file: ./odpkg.env
+    ports:
+      - "443:443"
+      - "80:80"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /opt/odpkg/log/nginx:/var/log/nginx

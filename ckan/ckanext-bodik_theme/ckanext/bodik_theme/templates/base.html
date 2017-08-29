@@ -1,0 +1,14 @@
+{% ckan_extends %}
+
+{%- block styles %}
+  {{ super() }}
+  <link rel="stylesheet" href="/responsive.css" type="text/css" media="screen, print" />
+  <link rel="stylesheet" type="text/css" href="/bodik_odcs.css" />
+  <script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js?ver=1.7.1'></script>
+  <script type="text/javascript" src="/jquery/scrolltopcontrol.js"></script>
+{% endblock %}
+
+{% block head_extras %}
+  {{ super() }}
+
+{% endblock %}

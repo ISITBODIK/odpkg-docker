@@ -1,0 +1,54 @@
+{#
+Adds a block of custom form fields.
+
+extras - The fields to add.
+errors - A dict of errors for the fields.
+limit  - The total number of fields that should be output.
+Example:
+
+  {% snippet 'snippets/custom_form_fields.html', extras=data.extras, errors=errors, limit=3 %}
+
+#}
+{% import "macros/form.html" as form %}
+
+    <div data-module="custom-fields">
+      <div class="control-group control-medium">
+        <label class="control-label" for="field-extras-0-key">更新頻度</label>
+        <div class="controls ">
+          <input id="field-extras-0-key" type="hidden" name="extras__0__key" value="frequency" />
+          <input id="field-extras-0-value" type="text" name="extras__0__value" value="{% for extra in extras %}{% if extra["key"] == "frequency" %}{{ extra["value"] }}{% endif %}{% endfor %}" placeholder="例:1年" />
+        </div>
+      </div>
+
+      <div class="control-group control-medium">
+        <label class="control-label" for="field-extras-2-key">地域</label>
+        <div class="controls ">
+          <input id="field-extras-2-key" type="hidden" name="extras__2__key" value="spatial" />
+          <input id="field-extras-2-value" type="text" name="extras__2__value" value="{% for extra in extras %}{% if extra["key"] == "spatial" %}{{ extra["value"] }}{% endif %}{% endfor %}" placeholder="" />
+        </div>
+      </div>
+
+      <div class="control-group control-medium">
+        <label class="control-label" for="field-extras-3-key">コピーライト</label>
+        <div class="controls ">
+          <input id="field-extras-3-key" type="hidden" name="extras__3__key" value="copyright" />
+          <input id="field-extras-3-value" type="text" name="extras__3__value" value="{% for extra in extras %}{% if extra["key"] == "copyright" %}{{ extra["value"] }}{% endif %}{% endfor %}" placeholder="" />
+        </div>
+      </div>
+
+      {% set current_url = request.environ.CKAN_CURRENT_URL %}
+      {% set current_lang = request.environ.CKAN_LANG %}
+      <div class="control-group">
+        <label class="control-label" for="field-extras-1-key">言語</label>
+        <div class="controls ">
+          <input id="field-extras-1-key" type="hidden" name="extras__1__key" value="language" />
+          <select id="field-extras-1-value" name="extras__1__value"  data-module="autocomplete" data-module-dropdown-class="lang-dropdown" data-module-container-class="lang-container">
+            {% for locale in h.get_available_locales() %}
+              <option value="{{ locale.english_name }}"  {% if extras %}{% for extra in extras %}{% if extra["key"] == "language" and extra["value"] == locale.english_name %}selected="selected"{% endif %}{% endfor %}{% else %}{% if locale == current_lang %}selected="selected"{% endif %}{% endif %}>
+                {{ locale.display_name or locale.english_name }}
+              </option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+    </div>

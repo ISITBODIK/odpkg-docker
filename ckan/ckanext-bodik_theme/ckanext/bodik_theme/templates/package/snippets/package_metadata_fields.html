@@ -1,0 +1,26 @@
+{% import 'macros/form.html' as form %}
+
+{% block package_metadata_fields %}
+
+  {% block package_metadata_fields_url %}
+    {{ form.input('url', label=_('Source'), id='field-url', placeholder=_('例:http://www.example.lg.jp/healthcare'), value=data.url, error=errors.url, classes=['control-medium']) }}
+  {% endblock %}
+
+  {% block package_metadata_author %}
+    {{ form.input('author', label=_('Author'), id='field-author', placeholder=_('例:保健福祉局保健課'), value=data.author, error=errors.author, classes=['control-medium']) }}
+  {% endblock %}
+
+  {% block package_metadata_fields_maintainer %}
+    {{ form.input('maintainer', label=_('Maintainer'), id='field-maintainer', placeholder=_('例:総務部情報政策課'), value=data.maintainer, error=errors.maintainer, classes=['control-medium']) }}
+  {% endblock %}
+
+  {% block package_metadata_fields_custom %}
+    {% block custom_fields %}
+      {% snippet 'snippets/custom_form_fields.html', extras=data.extras, errors=errors, limit=4 %} 
+    {% endblock %}
+  {% endblock %}
+
+  {% block dataset_fields %}
+  {% endblock %}
+
+{% endblock %}

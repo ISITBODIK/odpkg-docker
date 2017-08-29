@@ -1,0 +1,126 @@
+{% block header_wrapper %}
+
+{% block header_account %}
+      {% block header_account_container_content %}
+        {% if c.userobj %}
+      <header class="account-masthead">
+        <div class="container">
+          <div class="account avatar authed" data-module="me" data-me="{{ c.userobj.id }}">
+            <ul class="unstyled">
+              {% block header_account_logged %}
+              {% if c.userobj.sysadmin %}
+                <li>
+                  <a href="{{ h.url_for(controller='admin', action='index') }}" title="{{ _('Sysadmin settings') }}">
+                    <i class="icon-legal" style="color:white"></i>
+                  </a>
+                </li>
+              {% endif %}
+              <li>
+                <a href="{{ h.url_for(controller='user', action='read', id=c.userobj.name) }}" class="image" title="{{ _('View profile') }}">
+                  {{ h.gravatar((c.userobj.email_hash if c and c.userobj else ''), size=22) }}
+                  <span class="username" style="color:white">{{ c.userobj.display_name }}</span>
+                </a>
+              </li>
+              {% set new_activities = h.new_activities() %}
+              <li class="notifications {% if new_activities > 0 %}notifications-important{% endif %}">
+                {% set notifications_tooltip = ngettext('Dashboard (%(num)d new item)', 'Dashboard (%(num)d new items)', new_activities) %}
+                <a href="{{ h.url_for(controller='user', action='dashboard') }}" title="{{ notifications_tooltip }}">
+                  <i class="icon-dashboard" style="color:white"></i>
+                  <span style="color:white">{{ new_activities }}</span>
+                </a>
+              </li>
+              {% block header_account_settings_link %}
+                <li>
+                  <a href="{{ h.url_for(controller='user', action='edit', id=c.userobj.name) }}" title="{{ _('Edit settings') }}">
+                    <i class="icon-cog" style="color:white"></i>
+                  </a>
+                </li>
+              {% endblock %}
+              {% block header_account_log_out_link %}
+                <li>
+                  <a href="{{ h.url_for('/user/_logout') }}" title="{{ _('Log out') }}">
+                    <i class="icon-signout" style="color:white"></i>
+                  </a>
+                </li>
+              {% endblock %}
+              {% endblock %}
+            </ul>
+          </div>
+        </div>
+      </header>
+        {% endif %}
+      {% endblock %}
+{% endblock %}
+
+<!-- ヘッダー -->
+<header id="header" style="background-position: bottom center; background-size: cover; background-image: url({{ h.url_for_static_or_external(g.site_description) }})">
+
+<!-- ヘッダー中身 -->    
+<div class="header-inner">
+
+<!-- ロゴ -->
+<h1 class="logo">
+{% if g.site_logo %}
+  <a href="{{ h.odpkg_main_web() }}" title="{{ g.site_title }}"><img src="{{ h.url_for_static_or_external(g.site_logo) }}" alt="{{ g.site_title }}"/></a>
+{% else %}
+  <a href="{{ h.url('home') }}">{{ g.site_title }}</a>
+{% endif %}
+</h1>
+<!-- / ロゴ -->
+
+<!-- トップナビゲーション -->
+<div class="topinfo">
+<nav id="infonav" class="info-navigation" role="navigation">
+</nav>
+<!-- サーチ -->
+<!-- CKANデータセットの数を取得 -->
+<div class="search">
+<form action="{{ h.url_for(controller='package', action='search') }}" method="get">
+<div style="white-space:nowrap"><input id="field-sitewide-search" name="q" type="text" onfocus="if(this.value=='データセットを検索') this.value='';" onblur="if(this.value=='') this.value='データセットを検索';" value="データセットを検索" /><button type="submit"></button></div>
+<div class="search_txt">
+{{ h.get_site_statistics().dataset_count }}件のデータ・セットから検索可能です
+</div>
+</form>
+</div>
+<!-- / サーチ --> 
+</div>
+<!-- //トップナビゲーション -->
+
+</div>    
+<!-- / ヘッダー中身 -->    
+
+</header>
+<!-- / ヘッダー -->  
+<div class="clear"></div>
+
+<!-- トップナビゲーション -->
+<div class="nav_wrap">
+<nav id="nav" class="main-navigation" role="navigation">
+<div class="menu-topnav-container">
+<ul id="menu-topnav" class="nav-menu">
+
+<li><a href="{{ h.odpkg_main_web() }}/">ホーム</a></li>
+{% if '/organization' in h.full_current_url() %}
+<li><a href="{{ h.url_for(controller='package', action='search') }}">データセット</a></li>
+{% else %}
+<li class="current-menu-item current-page-item"><a href="{{ h.url_for(controller='package', action='search') }}">データセット</a></li>
+{% endif %}
+{% if '/organization' in h.full_current_url() %}
+<li class="current-menu-item current-page-item"><a href="{{ h.url_for(controller='organization', action='index') }}">組織</a></li>
+{% else %}
+<li><a href="{{ h.url_for(controller='organization', action='index') }}">組織</a></li>
+{% endif %}
+<li><a href="{{ h.odpkg_main_web() }}/group/">グループ</a></li>
+<li><a href="{{ h.odpkg_main_web() }}/info/">お知らせ</a></li>
+<li><a href="{{ h.odpkg_main_web() }}/tos/">利用規約</a></li>
+<li><a href="{{ h.odpkg_main_web() }}/about/">サイトについて</a></li>
+<li><a href="{{ h.odpkg_main_web() }}/contact/">お問い合わせ</a></li>
+<li><a href="{{ h.odpkg_dashboard() }}">ビジュアライズ</a></li>
+
+</ul></div></nav>
+
+</div>
+<!-- / トップナビゲーション -->
+<div class="clear"></div>
+
+{% endblock %}

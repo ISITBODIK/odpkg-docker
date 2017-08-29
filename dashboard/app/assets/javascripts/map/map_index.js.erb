@@ -1,0 +1,38 @@
+$('.map.index').ready(function () {
+
+    $('.inline').colorbox({
+      inline:true,
+      transition: 'none',
+      //transition: 'erastic',
+      width: '70%',
+      height:'70%',
+      //opacity: 0.7
+    });
+
+    $.blockUI.defaults.css = {
+      padding:        '16px',
+      width:          '20%',
+      top:            '40%',
+      left:           '40%',
+      textAlign:      'center',
+      color:          '#000',
+      border:         'none',
+      backgroundColor:'#fff',
+      cursor:         'wait',
+      'border-radius': '4px',
+      '-webkit-border-radius': '4px',
+      '-moz-border-radius': '4px'
+    };
+    $.blockUI.defaults.message = '<img src="<%= asset_path('loading.gif') %> "><br>お待ちください';
+    $(document).ajaxStart($.blockUI).ajaxStop($.unblockUI);
+
+    $('#menu_open').click(function(){
+      $('#menu_box').animate({left: '0'}, 250, 'swing');
+    });
+    $('#menu_close').click(function(){
+      $('#menu_box').animate({left: '-281px'}, 250, 'swing');
+    });
+    
+    var mapView = MapView.init({ map: $('#map_content') });
+    MapControl.init({ mapView: mapView });
+});

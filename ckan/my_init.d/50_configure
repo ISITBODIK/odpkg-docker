@@ -1,0 +1,101 @@
+#!/bin/sh
+
+# URL for the primary database, in the format expected by sqlalchemy (required
+# unless linked to a container called 'db')
+: ${DATABASE_URL:=}
+# URL for solr (required unless linked to a container called 'solr')
+: ${SOLR_URL:=}
+# URL for datapusher (required unless linked to a container called 'datapusher')
+: ${DATAPUSHER_URL:=}
+# Email to which errors should be sent (optional, default: none)
+: ${ERROR_EMAIL:=}
+
+set -eu
+
+CONFIG="${CKAN_CONFIG}/ckan.ini"
+
+abort () {
+  echo "$@" >&2
+  exit 1
+}
+
+write_config () {
+  "$CKAN_HOME"/bin/paster make-config ckan "$CONFIG"
+
+
+  "$CKAN_HOME"/bin/paster --plugin=ckan config-tool "$CONFIG" -e \
+      "sqlalchemy.url =  ${DATABASE_URL}" \
+      "solr_url = ${SOLR_URL}" \
+      "ckan.locale_default = ja" \
+      "ckan.storage_path = ${CKAN_DATA}/filestore" \
+      "error_email_from = ${MAIL_FROM}" \
+      "smtp.server = ${SMTP_HOST}:${SMTP_PORT}" \
+      "smtp.starttls = ${SMTP_STARTTLS}" \
+      "smtp.user = ${SMTP_USER}" \
+      "smtp.password = ${SMTP_PASS}" \
+      "smtp.mail_from = ${MAIL_FROM}" \
+      "ckan.site_url = https://${CKAN_URL}" \
+      "ckan.plugins = stats text_view image_view webpage_view recline_view recline_map_view datastore datapusher linechart barchart piechart basicgrid harvest ckan_harvester dcat dcat_rdf_harvester dcat_json_harvester dcat_json_interface googleanalytics bodik_theme" \
+      "ckan.datastore.write_url = postgresql://${POSTGRESQL_USER}:${POSTGRESQL_PASS}@db:5432/${POSTGRESQL_DATASTORE_DB}" \
+      "ckan.datastore.read_url = postgresql://${POSTGRESQL_DATASTORE_USER}:${POSTGRESQL_DATASTORE_PASS}@db:5432/${POSTGRESQL_DATASTORE_DB}" \
+      "ckan.datapusher.formats = csv xls xlsx tsv application/csv application/vnd.ms-excel application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" \
+      "ckan.datapusher.url = ${DATAPUSHER_URL}" 
+
+  "$CKAN_HOME"/bin/paster --plugin=ckan config-tool "$CONFIG" -f "$CKAN_CONFIG/custom_options.ini"
+
+  "$CKAN_HOME"/bin/paster --plugin=ckan config-tool "$CONFIG" -e \
+      "odpkg.dashboard = https://${RAILS_URL}" \
+      "odpkg.main_web = https://${WP_URL}" \
+      "odpkg.thumbnail_count = 5" \      
+      "ckan.harvest.mq.hostname = redis" \
+      "ckan.harvest.mq.port = 6379" \
+      "googleanalytics.id = ${GOOGLE_ANALYTICS_ID}" \
+      "licenses_group_url = file://${CKAN_HOME}/src/ckan/ckan/json-list-of-licenses.json" 
+
+
+  if [ -n "$ERROR_EMAIL" ]; then
+    sed -i -e "s&^#email_to.*&email_to = ${ERROR_EMAIL}&" "$CONFIG"
+  fi
+}
+
+link_postgres_url () {
+  local user=$POSTGRESQL_USER
+  local pass=$POSTGRESQL_PASS
+  local db=$POSTGRESQL_DB
+  local host=db
+  local port=5432
+  echo "postgresql://${user}:${pass}@${host}:${port}/${db}"
+}
+
+link_solr_url () {
+  local host=solr
+  local port=8983
+  echo "http://${host}:${port}/solr/ckan"
+}
+
+link_datapusher_url () {
+  local host=datapusher
+  local port=8800
+  echo "http://${host}:${port}/"
+}
+
+# If we don't already have a config file, bootstrap
+if [ ! -e "$CONFIG" ]; then
+  if [ -z "$DATABASE_URL" ]; then
+    if ! DATABASE_URL=$(link_postgres_url); then
+      abort "no DATABASE_URL specified and linked container called 'db' was not found"
+    fi
+  fi
+  if [ -z "$SOLR_URL" ]; then
+    if ! SOLR_URL=$(link_solr_url); then
+      abort "no SOLR_URL specified and linked container called 'solr' was not found"
+    fi
+  fi
+  if [ -z "$DATAPUSHER_URL" ]; then
+    if ! DATAPUSHER_URL=$(link_datapusher_url); then
+      abort "no DATAPUSHER_URL specified and linked container called 'datapusher' was not found"
+    fi
+  fi
+  write_config
+fi
+

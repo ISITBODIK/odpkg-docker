@@ -1,0 +1,65 @@
+{% ckan_extends %}
+
+{% block package_basic_fields_url %}
+  <div class="control-group ">
+    <label class="control-label" for="field-name">
+      <span title="このフィールドは必須です" class="control-required">*</span> URL</label>
+    <div class="controls ">
+
+    {% set prefix = h.url_for(controller='package', action='read', id='') %}
+    {% set domain = h.url_for(controller='package', action='read', id='', qualified=true) %}
+    {% set domain = domain|replace("http://", "")|replace("https://", "") %}
+    <div class="input-prepend">
+      <span class="add-on">/dataset/</span><input id="field-name" type="text" name="name"
+             value="{% if data.name %}{{ data.name }}{% endif %}"
+             placeholder="(半角英数で記載)"
+             data-module-prefix="{{ domain }}"
+             data-module-placeholder="&lt;dataset&gt;" />
+    </div>
+    <p class="action-info small">
+      </br>データセットのURLを設定します。
+    </p>
+    </div>
+  </div>
+{% endblock %}
+
+{% block package_basic_fields_tags %}
+  {% set tag_attrs = {'data-module': 'autocomplete', 'data-module-tags': '', 'data-module-source': '/api/2/util/tag/autocomplete?incomplete=?'} %}
+  {{ form.input('tag_string', id='field-tags', label=_('Tags'), placeholder=_('eg. economy, mental health, government'), value=data.tag_string, error=errors.tags, classes=['control-full'], attrs=tag_attrs) }}
+{% endblock %}
+
+{% block package_basic_fields_license %}
+<div class="control-group">
+  {% set error = errors.license_id %}
+  <label class="control-label" for="field-license">{{ _("License") }}</label>
+  <div class="controls">
+    <select id="field-license" name="license_id" data-module="autocomplete">
+      {% set existing_license_id = data.get('license_id') %}
+      {% for license_id, license_desc in h.license_options(existing_license_id) %}
+        <option value="{{ license_id }}" {% if data.get('license_id', 'cc-by') == license_id %}selected="selected"{% endif %}>{{ license_desc }}</option>
+      {% endfor %}
+    </select>
+    {% if error %}<span class="error-block">{{ error }}</span>{% endif %}
+    <span class="info-block info-inline">
+      <i class="icon-info-sign"></i>
+      {% trans %}
+        License definitions and additional information can be found
+        at <a href="http://opendefinition.org/licenses/">opendefinition.org</a>
+      {% endtrans %}
+    </span>
+  </div>
+</div>
+{% endblock %}
+
+{% block package_metadata_fields_visibility %}
+  <div class="control-group">
+    <label for="field-private" class="control-label">{{ _('Visibility') }}</label>
+    <div class="controls">
+      <select id="field-private" name="private">
+        {% for option in [('False', _('Public')), ('True', _('Private'))] %}
+        <option value="{{ option[0] }}" {% if option[0] == data.private|trim %}selected="selected"{% endif %}>{{ option[1] }}</option>
+        {% endfor %}
+      </select>
+    </div>
+  </div>
+{% endblock %}

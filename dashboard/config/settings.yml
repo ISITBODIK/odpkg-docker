@@ -1,0 +1,17 @@
+home:
+  url:
+ckan:
+  api:
+  polygon_tag: マップ情報
+  point_tag: 位置情報
+analytics:
+  id:
+maps:
+  key:
+proxy:
+  host:
+  port:
+polygon:
+  columns:
+    - 総人口
+organizations: []

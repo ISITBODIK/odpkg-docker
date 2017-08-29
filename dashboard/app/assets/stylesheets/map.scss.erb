@@ -1,0 +1,280 @@
+@charset "utf-8";
+
+$small: "only screen and (max-width:679px)";
+$large: "only screen and (min-width:680px)";
+$mainColor: #0097e0;
+$subColor: #d8edf5;
+
+body.map {
+
+  font-family:arial,"ヒラギノ角ゴ Pro W3","Hiragino Kaku Gothic Pro","メイリオ","Meiryo",Osaka,"ＭＳ Ｐゴシック","MS PGothic",Sans-Serif;
+  font-size: 14px;
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+
+  .wrapper {
+    width: 100%;
+    height: 100%;
+  }
+
+//	h1, h2, h3, h4, h5, h6 {
+//		margin-top: 0;
+//		margin-bottom: 0.2em;
+//	}
+
+  .select_list {
+    margin-top: 0;
+    margin-bottom: 1em;
+    border: 1px solid #cccccc;
+    overflow-y: auto;
+    ul {
+      margin: 0;
+      padding: 0;
+    }
+    li {
+      padding: 6px;
+      font-size: 1em;
+    }
+    li:nth-child(2n+1) {
+      background-color: $subColor;
+    }
+    li:nth-child(2n+0) {
+      background-color: #ffffff;
+    }
+  }
+
+  .organization_select {
+    outline: none;
+    border: 0px solid #cccccc;
+    width: 100%;
+    padding: 4px;
+    font-size: 100%;
+  }
+
+  .menu_content, .map_header {
+    h2 {
+      padding: 8px;
+      font-size: 1.2em;
+      color: #ffffff;
+      background-color: $mainColor;
+    }
+    h3 {
+      font-size: 1.1em;
+    }
+  }
+
+  .menu_links {
+    ul {
+      margin-left: 4px;
+    }
+    li {
+      line-height: 1.4em;
+    }
+    a {
+      text-decoration: none;
+      color: $mainColor;
+    }
+  }
+
+  #cboxLoadedContent {
+    background-color: #ffffff;
+    border: solid 1px #999999;
+    padding: 16px;
+  }
+
+  .inline_content {
+    h2 {
+      padding: 10px;
+      margin-bottom: 0.5em;
+      font-family: 游ゴシック体, 'Yu Gothic', YuGothic, 'ヒラギノ角ゴシック Pro', 'Hiragino Kaku Gothic Pro', メイリオ, Meiryo, Osaka, 'ＭＳ Ｐゴシック', 'MS PGothic', sans-serif;
+      font-size: 1.2em;
+      background-color: $mainColor;
+      color: #ffffff;
+      line-height: 1em;
+    }
+    .entry {
+      padding: 5px 0px 30px 15px;
+      line-height: 1.8em;
+    }
+    ul {
+      margin-left: 1em;
+      li {
+        list-style-type: none;
+      }
+    }
+    ol {
+      margin-left: 2em;
+      li {
+        list-style-type: decimal;
+        list-style-position: outside;
+      }
+    }
+  }
+
+  .map_header {
+    li {
+      display: inline-block;
+    }
+  }
+
+  .marker {
+    height: 0.9em;
+  }
+
+//	div.gm-style-iw div {
+//		overflow: hidden !important;
+//	}
+
+  @media #{$large} {
+    .header {
+      display: none;
+    }
+    .mobile_header {
+      display: none;
+    }		
+    .content {
+      display: table;
+      width: 100%;
+      height: 100%;
+      background: url(<%= asset_path('bg.png') %>);
+    }
+    .menu_box {
+      display: table-cell;
+      width: 280px;
+      height: 100%;
+      vertical-align: top;
+    }
+    .map_box {
+      display: table-cell;
+      height: 100%;
+    }
+    .menu_header {
+      height: 0px;
+      display: none;
+    }
+    .menu_content {
+      padding-right: 8px;
+    }
+    .map_header {
+      height: 80px;
+      .selected {
+        padding: 8px;
+        font-size: 1.2em;
+      }
+      .range {
+        position: absolute;
+        top: 138px;
+        right: 8px;
+        z-index: 500;
+        background-color: rgba(0, 0, 0, 0.4);
+        border-radius: 2px;
+      }
+    }
+    .map_footer {
+      height: 30px;
+      p {
+        padding: 8px;
+        font-size: 1.2em;
+      }
+    }
+    .map_content {
+      width: 100%;
+      height: calc(100% - 110px);
+    }
+    .select_list {
+      &.group_list {
+        height: 90px;
+      }
+      &.polygon_list {
+        height: 120px;
+      }
+      &.point_list {
+        height: 150px;
+      }
+    }
+  }
+
+  @media #{$small} {
+    .header {
+      display: none;
+    }
+    .mobile_header {
+      height: 40px;
+      font-size: 120%;
+      text-align: center;
+      line-height: 40px;
+      box-shadow: 10px 10px;
+      #menu_open {
+        float: left;
+        padding: 4px;
+      }
+      #menu_home {
+        float: right;
+        padding: 4px;
+        :visited {
+          color: #000000;
+        }
+      }
+    }
+    .content {
+      display: block;
+      height: calc(100% - 40px);
+      width: 100%;
+      background: url(<%= asset_path('bg.png') %>);
+    }
+    .menu_box {
+      display: block;
+      position: absolute;
+      top: 0;
+      left: -281px;
+      height: 100%;
+      width: 280px;
+      z-index: 100;
+      background-color: #eeeeee;
+      border-right: solid 1px #cccccc;
+    }
+    .map_box {
+      display: block;
+      height: 100%;
+    }
+    .menu_header {
+      height: 40px;
+      background-color: $subColor;
+      #menu_close {
+        float: left;
+        padding: 4px;
+      }			
+    }
+    .menu_content {
+      height: calc(100% - 40px);
+      overflow-y: auto;
+    }
+    .map_header {
+      height: 80px;
+      .selected {
+        padding: 4px;
+      }
+      .range {
+        position: absolute;
+        top: 170px;
+        right: 8px;
+        z-index: 500;
+        background-color: rgba(0, 0, 0, 0.6);
+        border-radius: 2px;
+      }
+    }
+    .map_footer {
+      height: 40px;
+      p {
+        padding: 4px;
+      }
+    }
+    .map_content {
+      width: 100%;
+      height: calc(100% - 120px);
+    }
+  }
+
+}
