@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 class Geo::PolygonDataBuilderService < ServiceBase
 
   def initialize(geojson, rows)
@@ -8,7 +9,7 @@ class Geo::PolygonDataBuilderService < ServiceBase
   def perform
 
     header = @rows.shift
-    loc_idx = header.index('町名') #町名の入ったカラムのインデクス
+    loc_idx = header.index('KEY_CODE') # KEY_CODEの入ったカラムのインデクス
 
     # 集計に使用するカラムのインデクスを取得する
     count_idx = nil
@@ -23,7 +24,7 @@ class Geo::PolygonDataBuilderService < ServiceBase
       raise ServiceError, message
     end
 
-    loc_hash = {} #町名をキーとした値のリスト
+    loc_hash = {} # KEY_CODEをキーとした値のリスト
     @rows.each do |row|
       loc_hash[row[loc_idx]] = row
     end
@@ -35,7 +36,7 @@ class Geo::PolygonDataBuilderService < ServiceBase
 
     # 位置情報とデータを紐付ける
     @geojson[:features].each do |feature|
-      loc_name = feature[:properties][:'__name']
+      loc_name = feature[:properties][:'KEY_CODE']
       next if loc_name.nil?
       
       loc_data = loc_hash[loc_name]
