@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 class Geo::PointDataBuilderService < ServiceBase
 
   def initialize(geojson, rows)
@@ -28,7 +29,12 @@ class Geo::PointDataBuilderService < ServiceBase
       feature[:geometry][:coordinates] = [row[lng_idx].to_f, row[lat_idx].to_f]
 
       header.each_with_index do |field, idx|
-        feature[:properties][field] = row[idx].to_s
+
+        if ( ( field != 'iConf' ) &&
+             ( field != 'iLvl'  ) ) then
+
+          feature[:properties][field] = row[idx].to_s
+        end
       end
 
       @geojson[:features] << feature
