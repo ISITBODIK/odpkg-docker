@@ -10,13 +10,13 @@ var MapControl = (function($) {
     // 選択中のListItemModel
     self.listSelected = ko.observable();
     // 選択中のListItemModel変更時イベント
-    self.listSelected.subscribe(function(model) {
-      if (model) {
-        self.loadList(model);
-      } else {
-        self.resetList();
-      }
-    });
+    //self.listSelected.subscribe(function(model) {
+    //  if (model) {
+    //    self.loadList(model);
+    //  } else {
+    //    self.resetList();
+    //  }
+    //});
 
     // グループ一覧
     self.groups = ko.observableArray();
@@ -75,7 +75,34 @@ var MapControl = (function($) {
         self.lists.push(new ListItemModel(item));
       });
       // 先頭の組織を選択
-      self.listSelected(self.lists()[0]);
+      //self.listSelected(self.lists()[0]);
+
+      // URLで指定されている組織を選択する
+      $.each(self.lists(), function(idx, item){
+        if (item.id() == orgId) {
+          self.listSelected(item);
+          self.loadList(item);
+
+          // 色の変更
+          $('.menu_content h2').css('background-color', item.color().main);
+          $('.map_header h2').css('background-color', item.color().main);
+          $('.menu_links a').css('color', item.color().main);
+          $('.inline_content h2').css('background-color', item.color().main);
+
+          return false;
+        }
+      });
+
+      // 組織の選択時にURLを変更する
+      self.listSelected.subscribe(function(model) {
+        self.resetList();
+        if (model) {
+          location.href = model.id();
+        } else {
+          location.href = '.';
+        }
+      });
+
     })
     .fail(function(xhr, status, exception){
       console.debug(xhr, status, exception);
@@ -124,6 +151,11 @@ var MapControl = (function($) {
         $.each(json.points, function(idx, item){
           self.points.push(new PointItemModel({ id: item.id, name: item.name, group: item.group, vm: self }));
         });
+
+        // 色の変更
+        var listSelected = self.listSelected();
+        $('.select_list li:nth-child(2n+1)').css('background-color', listSelected.color().sub);
+        $('.menu_header').css('background-color', listSelected.color().sub);
       })
       .fail(function(xhr, status, exception){
         console.debug(xhr, status, exception);
@@ -141,6 +173,8 @@ var MapControl = (function($) {
     self.name = ko.observable(params.name);
     // マップ情報
     self.maps = ko.observable(params.maps);
+    // 色情報
+    self.color = ko.observable(params.color);
   };
 
   // グループモデル
@@ -303,10 +337,12 @@ var MapControl = (function($) {
 
   var API = 'api';
   var mapView = null;
+  var orgId = null;
 
   var MapViewModel = {
     init: function(params) {
       mapView = params.mapView;
+      orgId = params.orgId;
 
       ko.applyBindings({
         menuViewModel: new MenuViewModel(),

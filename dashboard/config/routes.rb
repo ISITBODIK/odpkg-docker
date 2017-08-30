@@ -2,6 +2,8 @@ Rails.application.routes.draw do
 
   root to: 'map#index'
 
+  get '/:id', to: 'map#show'
+
   namespace :api, {format: 'json'} do
     namespace :list do
       get '/', action: :index

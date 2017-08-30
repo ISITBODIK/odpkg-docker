@@ -1,4 +1,4 @@
-$('.map.index').ready(function () {
+$('.map_index').ready(function () {
 
     $('.inline').colorbox({
       inline:true,
@@ -34,5 +34,8 @@ $('.map.index').ready(function () {
     });
     
     var mapView = MapView.init({ map: $('#map_content') });
-    MapControl.init({ mapView: mapView });
+    MapControl.init({
+      mapView: mapView,
+      orgId: $('#org_id').text()
+    });
 });
