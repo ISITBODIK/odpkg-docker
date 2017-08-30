@@ -1,15 +1,18 @@
+# -*- coding: utf-8 -*-
 class Api::ListService < ServiceBase
 
   def initialize(org)
-    @org = org
+    @org = org.to_s
   end
 
   def perform
     
-    raise ServiceError, '不明な組織' unless Settings.organizations.collect{|org| org[:id]}.include?(@org) 
+    logger.debug( @org )
+
+    raise ServiceError, '不明な組織' unless Settings.organizations.collect{|org| org[:id].to_s}.include?(@org) 
     raise ServiceError, '組織名不正' unless @org.match(/^[\w-]+$/)
 
-    polygon_find_service = Ckan::GeodataFindService.new(@org, Settings.ckan.polygon_tag)
+    polygon_find_service = Ckan::MapdataFindService.new(@org, Settings.ckan.polygon_tag)
     point_find_service = Ckan::GeodataFindService.new(@org, Settings.ckan.point_tag)
 
     polygon_groups, polygons = polygon_find_service.call
