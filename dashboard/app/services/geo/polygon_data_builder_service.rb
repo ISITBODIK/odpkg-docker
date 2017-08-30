@@ -46,9 +46,14 @@ class Geo::PolygonDataBuilderService < ServiceBase
       i   += 1
       c[i] = 1
   
+      l[idx] = l[idx].to_s
+
       if    l[idx].length == 9 then
         c[i] = 0
         @rows.each do |h|
+
+          h[idx] = h[idx].to_s
+
           if l[idx] == h[idx].slice(0,9) then
             c[i] += 1
           end
@@ -56,6 +61,9 @@ class Geo::PolygonDataBuilderService < ServiceBase
       elsif l[idx].length == 5 then
         c[i] = 0
         @rows.each do |h|
+
+          h[idx] = h[idx].to_s
+
           if l[idx] == h[idx].slice(0,5) then
             c[i] += 1
           end
@@ -99,20 +107,27 @@ class Geo::PolygonDataBuilderService < ServiceBase
       next if loc_data.nil?
 
       header.each_with_index do |field, idx|
-
-        feature[:properties][field] = loc_data[idx].to_s
-          
+        
+        #ピンデータはKEY_CODE以外の列は表示する Y.Sakamoto 2017.08.24
+        if field != 'KEY_CODE' then
+            feature[:properties][field] = loc_data[idx].to_s
+        end 
+ 
       end
 
       # 地図塗り分け用の値作成
       num = loc_data[count_idx].to_f
       range = (((num - min) / (max - min)) * 5.0).floor
       feature[:properties][:'__range'] = range
-
+      
+      # MOJI,KEY_CODE,KENIKI_NAMを追加 Y.Sakamoto 2017.08.24
       # feature[:properties].delete(:'__name')
+      feature[:properties].delete(:'KEY_CODE')
       feature[:properties].delete(:'KEN_NAME')
       feature[:properties].delete(:'GST_NAME')
       feature[:properties].delete(:'CSS_NAME')
+      feature[:properties].delete(:'MOJI')
+      feature[:properties].delete(:'KENIKI_NAM')
     end
 
     @geojson
