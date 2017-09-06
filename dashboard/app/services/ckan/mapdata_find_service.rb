@@ -1,4 +1,4 @@
-class Ckan::GeodataFindService < ServiceBase
+class Ckan::MapdataFindService < ServiceBase
 
   def initialize(org, tag)
     @org = org
@@ -25,7 +25,6 @@ class Ckan::GeodataFindService < ServiceBase
         if ['XLSX', 'XLS', 'CSV'].include?(resource[:format])
           list << { id: resource[:id], name: resource[:name], group: group }
         end
-        break
       end
     end
 
