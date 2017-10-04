@@ -58,6 +58,8 @@ gem 'roo'
 gem 'roo-xls'
 gem 'knockoutjs-rails'
 gem 'font-awesome-rails'
+gem 'linkeddata'
+gem 'rest-client'
 
 # For development
 group :development do

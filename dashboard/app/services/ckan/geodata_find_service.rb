@@ -22,7 +22,7 @@ class Ckan::GeodataFindService < ServiceBase
         groups << group
       end
       dataset[:resources].each do |resource|
-        if ['XLSX', 'XLS', 'CSV'].include?(resource[:format])
+        if ['XLSX', 'XLS', 'CSV', 'JSON'].include?(resource[:format])
           list << { id: resource[:id], name: resource[:name], group: group }
         end
         break
