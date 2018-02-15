@@ -1,0 +1,6 @@
+2286,2287c2286,2287
+<     var mapUrl = "//stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}.jpg";
+<     var osmAttribution = 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://creativecommons.org/licenses/by-sa/3.0">CC BY SA</a>.';
+---
+>     var mapUrl = "//cyberjapandata.gsi.go.jp/xyz/std/{z}/{x}/{y}.png";
+>     var osmAttribution = "<a href='https://maps.gsi.go.jp/development/ichiran.html' target='_blank'>地理院タイル</a>";

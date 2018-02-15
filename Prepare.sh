@@ -46,3 +46,6 @@ chmod -R 777 wordpress/wp-content/
 echo "change permission ckandata/"
 sudo mkdir -p /opt/odpkg/ckan/data
 sudo chmod -R 777 /opt/odpkg/ckan/data
+
+echo "change ckan map data"
+sudo patch -st ./ckan/ckan/ckanext/reclineview/theme/public/vendor/recline/recline.js ckan/ckan.patch
