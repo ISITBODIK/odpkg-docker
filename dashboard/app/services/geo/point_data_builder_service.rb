@@ -10,10 +10,20 @@ class Geo::PointDataBuilderService < ServiceBase
     header = @rows.shift
 
     lat_idx = header.index('緯度')
-    raise '緯度エラー' if lat_idx.nil?
+    if ( lat_idx == nil ) then
+      lat_idx = header.index{|item| item =~ /緯度/}
+      if ( lat_idx == nil ) then
+        raise '緯度エラー'
+      end
+    end
 
     lng_idx = header.index('経度')
-    raise '経度エラー' if lng_idx.nil?
+    if ( lng_idx == nil ) then
+      lng_idx = header.index{|item| item =~ /経度/}
+      if ( lng_idx == nil ) then
+         raise '経度エラー'
+      end
+    end
 
     @rows.each do |row|
       feature = {
