@@ -22,7 +22,7 @@ ENV DATAPUSHER_HOME /usr/lib/ckan/datapusher
 RUN virtualenv $DATAPUSHER_HOME
 
 ADD datapusher $DATAPUSHER_HOME/src/datapusher
-RUN pip install pip==1.4.1
+RUN pip install pip==1.5.6
 RUN pip install -r $DATAPUSHER_HOME/src/datapusher/requirements.txt
 
 RUN mkdir -p /var/log/datapusher
