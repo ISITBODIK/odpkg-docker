@@ -10,6 +10,7 @@ odpkg-dockerは、[CKAN](https://ckan.org/)を使ったオープンデータサ�
 ポータル機能は[Wordpress](https://ja.wordpress.org/)を使い、オープンデータ利用に関わる情報提供に必要な機能を提供します。
 ダッシュボード機能は、CKAN上で公開されているオープンデータを地図上で簡単に表示し視覚化するための機能を提供します。
 本odpkg-dockerは、上記のパッケージに必要な複数のツールを[docker](https://www.docker.com/)を使い提供します。
+
 ---
 ### インストール
 ---
