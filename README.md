@@ -17,4 +17,5 @@ odpkg-dockerは、CKANを使ったオープンデータサイトのためのパ�
 
 ### 参考
 
-- [BODIK](http://odcs.bodik.jp/)（ビッグデータ＆オープンデータ・イニシアティブ九州）オープンデータカタログサイ
+- [BODIK](http://odcs.bodik.jp/)（ビッグデータ＆オープンデータ・イニシアティブ九州）オープンデータカタログサイト
+- [CKAN](https://ckan.org/)CKANホームページ
