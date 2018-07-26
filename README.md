@@ -13,7 +13,7 @@ odpkg-dockerは、CKANを使ったオープンデータサイトのためのパ�
 
 ### インストール
 
-インストール手順等は、本ソースのdocuments以下にある資料をご参照下さい。
+本パッケージのインストール手順等は、本ソースのdocuments以下にある[新規パッケージ導入マニュアル.pdf](https://github.com/ISITBODIK/odpkg-docker/blob/master/documents/%E6%96%B0%E8%A6%8F%E3%83%91%E3%83%83%E3%82%B1%E3%83%BC%E3%82%B8%E5%B0%8E%E5%85%A5%E3%83%9E%E3%83%8B%E3%83%A5%E3%82%A2%E3%83%AB.pdf)資料をご参照下さい。
 
 ### 参考
 
