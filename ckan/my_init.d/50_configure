@@ -32,7 +32,7 @@ write_config () {
       "smtp.password = ${SMTP_PASS}" \
       "smtp.mail_from = ${MAIL_FROM}" \
       "ckan.site_url = https://${CKAN_URL}" \
-      "ckan.plugins = stats text_view image_view webpage_view recline_view recline_map_view datastore datapusher linechart barchart piechart basicgrid harvest ckan_harvester dcat dcat_rdf_harvester dcat_json_harvester dcat_json_interface pdf_view extractor googleanalytics bodik_theme28" \
+      "ckan.plugins = stats text_view image_view webpage_view recline_view recline_map_view datastore datapusher linechart barchart piechart basicgrid harvest ckan_harvester dcat dcat_rdf_harvester dcat_json_harvester dcat_json_interface pdf_view googleanalytics bodik_theme28" \
       "ckan.datastore.write_url = ${CKAN_DATASTORE_WRITE_URL}" \
       "ckan.datastore.read_url = ${CKAN_DATASTORE_READ_URL}" \
       "ckan.datapusher.formats = csv xls xlsx tsv application/csv application/vnd.ms-excel application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" \
