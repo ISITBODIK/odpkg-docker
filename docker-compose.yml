@@ -1,45 +1,89 @@
-version: '2'
+# docker-compose build && docker-compose up -d
+# If "docker-compose logs ckan" shows DB not ready, run "docker-compose restart ckan" a few times.
+version: "3"
+
+volumes:
+  ckan_storage:
+  pg_data:
 
 services:
   ckan:
-    depends_on:
+    container_name: ckan
+    build:
+      context: ./ckan
+      args:
+          - CKAN_SITE_URL=${CKAN_SITE_URL}
+    links:
       - db
       - solr
-      - datapusher
       - redis
-    build: ./ckan
+#   ports:
+#     - "0.0.0.0:${CKAN_PORT}:5000"
+    environment:
+      # Defaults work with linked containers, change to use own Postgres, SolR, Redis or Datapusher
+      - CKAN_SQLALCHEMY_URL=postgresql://ckan:${POSTGRES_PASSWORD}@db/ckan
+      - CKAN_DATASTORE_WRITE_URL=postgresql://ckan:${POSTGRES_PASSWORD}@db/datastore
+      - CKAN_DATASTORE_READ_URL=postgresql://datastore_ro:${DATASTORE_READONLY_PASSWORD}@db/datastore
+      - CKAN_SOLR_URL=http://solr:8983/solr/ckan
+      - CKAN_REDIS_URL=redis://redis:6379/1
+      - CKAN_DATAPUSHER_URL=http://datapusher:8800
+      - CKAN_SITE_URL=${CKAN_SITE_URL}
+      - CKAN_MAX_UPLOAD_SIZE_MB=${CKAN_MAX_UPLOAD_SIZE_MB}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - DS_RO_PASS=${DATASTORE_READONLY_PASSWORD}
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /opt/odpkg/log/ckan:/var/log/apache2
+#     - ckan_storage:/var/lib/ckan
       - /opt/odpkg/ckan/data:/var/lib/ckan
-      - ./ckan/ckanext-bodik_theme:/usr/lib/ckan/default/src/ckanext-bodik_theme
+      - ./ckan/ckanext-bodik_theme28:/usr/lib/ckan/default/src/ckanext-bodik_theme28
     restart: always
-    env_file: ./odpkg.env
+    env_file: ./.env
+
+  datapusher:
+    container_name: datapusher
+    image: clementmouchet/datapusher
+    ports:
+      - "8800:8800"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /opt/odpkg/log/datapusher:/var/log/datapusher
+    restart: always
+    env_file: ./.env
 
   db:
-    build: ./postgresql
+    container_name: db
+    build:
+      context: ./ckan/ckan
+      dockerfile: contrib/docker/postgresql/Dockerfile
+      args:
+        - DS_RO_PASS=${DATASTORE_READONLY_PASSWORD}
+        - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    environment:
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - DS_RO_PASS=${DATASTORE_READONLY_PASSWORD}
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /opt/odpkg/log/postgresql:/var/log/postgresql
+#     - pg_data:/var/lib/postgresql/data
     restart: always
-    env_file: ./odpkg.env
-  
+    env_file: ./.env
+
   solr:
-    build: ./solr
+    container_name: solr
+    build:
+      context: ./ckan
+      dockerfile: solr/Dockerfile
+    ports:
+      - "8983:8983"
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /opt/odpkg/log/solr:/opt/solr/example/logs
     restart: always
 
-  datapusher:
-    build: ./datapusher
-    volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - /opt/odpkg/log/datapusher:/var/log/datapusher
-    restart: always
-
   redis:
-    image: redis
+    container_name: redis
+    image: redis:latest
     volumes:
       - /etc/localtime:/etc/localtime:ro
     restart: always
@@ -72,18 +116,18 @@ services:
     privileged: true
     restart: always
     env_file: ./odpkg.env
-      
+
   nginx:
     depends_on:
       - ckan
       - wordpress
       - dashboard
     build: ./nginx
-    restart: always
-    env_file: ./odpkg.env
     ports:
       - "443:443"
       - "80:80"
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /opt/odpkg/log/nginx:/var/log/nginx
+    restart: always
+    env_file: ./odpkg.env

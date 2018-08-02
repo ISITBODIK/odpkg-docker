@@ -30,8 +30,8 @@ sed -i -e"s|__SMTP_AUTH__|$SMTP_AUTH|g" ./mysql/wordpress.sql
 sed -i -e"s|__SMTP_SSL__|$SMTP_SSL|g" ./mysql/wordpress.sql
 
 echo "setting colors"
-sed -i -e"s|0097E0|$MAIN_COLOR|ig" ./ckan/ckanext-bodik_theme/ckanext/bodik_theme/public/bodik_odcs.css
-sed -i -e"s|58C5F9|$SUB_COLOR|ig" ./ckan/ckanext-bodik_theme/ckanext/bodik_theme/public/bodik_odcs.css
+sed -i -e"s|0097E0|$MAIN_COLOR|ig" ./ckan/ckanext-bodik_theme28/ckanext/bodik_theme28/public/bodik_odcs.css
+sed -i -e"s|58C5F9|$SUB_COLOR|ig" ./ckan/ckanext-bodik_theme28/ckanext/bodik_theme28/public/bodik_odcs.css
 sed -i -e"s|0097E0|$MAIN_COLOR|ig" ./wordpress/wp-content/themes/odpkg/style.css
 sed -i -e"s|58C5F9|$SUB_COLOR|ig" ./wordpress/wp-content/themes/odpkg/style.css
 sed -i -e"s|0097E0|$MAIN_COLOR|ig" ./dashboard/app/assets/stylesheets/map.scss.erb
