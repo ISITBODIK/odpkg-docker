@@ -4,9 +4,9 @@ set -eu
 virtualenv $CKAN_VENV
 cd $CKAN_VENV/src/ckanext-bodik_theme28 && $CKAN_VENV/bin/python setup.py develop
 
-$CKAN_VENV/bin/paster --plugin=ckan datastore set-permissions -c ${CKAN_CONFIG}/production.ini
-
 $CKAN_VENV/bin/paster --plugin=ckan db init -c ${CKAN_CONFIG}/production.ini
+
+$CKAN_VENV/bin/paster --plugin=ckanext-harvest harvester initdb -c ${CKAN_CONFIG}/production.ini
 
 expect -c "
  spawn $CKAN_VENV/bin/paster --plugin=ckan user setpass default -c $CKAN_CONFIG/production.ini
