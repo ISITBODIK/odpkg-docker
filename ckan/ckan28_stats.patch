@@ -1,0 +1,10 @@
+--- index.html.org	2018-08-06 15:09:57.488577545 +0900
++++ index.html	2018-08-06 15:11:09.583324922 +0900
+@@ -194,6 +194,6 @@
+ overriding the createElement() method on this page.
+ See: http://stackoverflow.com/questions/10208062/using-flot-with-bootstrap-ie8-incompatibility
+ #}
+-{% resource "vendor/block_html5_shim" %}
++{# removed #}
+ {% resource "ckanext_stats/stats" %}
+ {% endblock %}

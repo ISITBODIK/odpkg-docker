@@ -1,0 +1,13 @@
+--- recline.js.org	2018-08-06 14:36:37.554614102 +0900
++++ recline.js	2018-08-06 14:44:06.658961195 +0900
+@@ -2298,8 +2298,8 @@
+   _setupMap: function(){
+     var self = this;
+     this.map = new L.Map(this.$map.get(0));
+-    var mapUrl = this.options.mapTilesURL || 'https://stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}.png';
+-    var attribution = this.options.mapTilesAttribution ||'Map tiles by <a href="http://stamen.com">Stamen Design</a> (<a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>). Data by <a href="http://openstreetmap.org">OpenStreetMap</a> (<a href="http://creativecommons.org/licenses/by-sa/3.0">CC BY SA</a>)';
++    var mapUrl = this.options.mapTilesURL || "//cyberjapandata.gsi.go.jp/xyz/std/{z}/{x}/{y}.png";
++    var attribution = this.options.mapTilesAttribution || "<a href='https://maps.gsi.go.jp/development/ichiran.html' target='_blank'>地理院タイル</a>";
+     var subdomains = this.options.mapTilesSubdomains || 'abc';
+ 
+     var bg = new L.TileLayer(mapUrl, {maxZoom: 19, attribution: attribution, subdomains: subdomains});
