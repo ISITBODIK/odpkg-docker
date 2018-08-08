@@ -21,3 +21,5 @@ odpkg-dockerは、CKANを使ったオープンデータサイトのためのパ�
 - [CKAN](https://ckan.org/)：CKANホームページ
 - [data.go.jp](http://www.data.go.jp)：データカタログサイト
 - [政府CIOポータル](https://cio.go.jp/policy-opendata)：政府CIOポータル オープンデータページ
+
+### Copyright and Licenses
