@@ -4,9 +4,16 @@ set -eu
 virtualenv $CKAN_VENV
 cd $CKAN_VENV/src/ckanext-bodik_theme28 && $CKAN_VENV/bin/python setup.py develop
 
+# Init ckan DB
 $CKAN_VENV/bin/paster --plugin=ckan db init -c ${CKAN_CONFIG}/production.ini
 
+# Init harvester DB
 $CKAN_VENV/bin/paster --plugin=ckanext-harvest harvester initdb -c ${CKAN_CONFIG}/production.ini
+
+# Init extractor DB
+$CKAN_VENV/bin/paster --plugin=ckanext-extractor init -c /etc/ckan/production.ini
+# Run jobs worker for extractor
+$CKAN_VENV/bin/paster --plugin=ckan jobs worker --config=/etc/ckan/production.ini &
 
 expect -c "
  spawn $CKAN_VENV/bin/paster --plugin=ckan user setpass default -c $CKAN_CONFIG/production.ini
