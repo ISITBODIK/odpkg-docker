@@ -23,5 +23,6 @@ odpkg-dockerは、CKANを使ったオープンデータサイトのためのパ�
 - [政府CIOポータル](https://cio.go.jp/policy-opendata)：政府CIOポータル オープンデータページ
 
 ### サポート
+本パッケージの利用に関するご質問などは、[BODIK](http://odcs.bodik.jp/)よりお知らせください。
 
 ### Copyright and Licenses
