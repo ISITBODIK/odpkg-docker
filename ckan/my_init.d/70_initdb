@@ -15,6 +15,10 @@ $CKAN_VENV/bin/paster --plugin=ckanext-extractor init -c /etc/ckan/production.in
 # Run jobs worker for extractor
 $CKAN_VENV/bin/paster --plugin=ckan jobs worker --config=/etc/ckan/production.ini &
 
+# Setup supervisor
+/usr/bin/supervisord -c /etc/supervisor/supervisord.conf
+/usr/bin/supervisorctl -c /etc/supervisor/supervisord.conf
+
 expect -c "
  spawn $CKAN_VENV/bin/paster --plugin=ckan user setpass default -c $CKAN_CONFIG/production.ini
  expect \"Password:\" ;  send $PASSWORD; send \r
