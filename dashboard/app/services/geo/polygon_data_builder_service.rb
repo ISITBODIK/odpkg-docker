@@ -117,7 +117,13 @@ class Geo::PolygonDataBuilderService < ServiceBase
 
       # 地図塗り分け用の値作成
       num = loc_data[count_idx].to_f
-      range = (((num - min) / (max - min)) * 5.0).floor
+
+      if max != min then
+        range = (((num - min) / (max - min)) * 5.0).floor
+      else
+        range = 0
+      end
+
       feature[:properties][:'__range'] = range
       
       # MOJI,KEY_CODE,KENIKI_NAMを追加 Y.Sakamoto 2017.08.24
