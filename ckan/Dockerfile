@@ -49,7 +49,7 @@ RUN git clone https://github.com/ckan/ckanext-basiccharts.git $CKAN_HOME/src/cka
 RUN cd $CKAN_HOME/src/ckanext-basiccharts && $CKAN_HOME/bin/python setup.py install
 
 # Install ckanext-harvent
-RUN $CKAN_HOME/bin/pip install -e git+https://github.com/ckan/ckanext-harvest.git#egg=ckanext-harvest
+RUN $CKAN_HOME/bin/pip install -e git+https://github.com/ckan/ckanext-harvest.git@v1.1.0#egg=ckanext-harvest
 RUN $CKAN_HOME/bin/pip install -r $CKAN_HOME/src/ckanext-harvest/pip-requirements.txt
 RUN echo "*/15 * * * * root $CKAN_HOME/bin/paster --plugin=ckanext-harvest harvester run -c $CKAN_CONFIG/ckan.ini >/dev/null 2>&1"  >> /etc/cron.d/ckan-cron
 RUN echo "0 3 * * * root $CKAN_HOME/bin/paster --plugin=ckanext-harvest harvester clean_harvest_log -c $CKAN_CONFIG/ckan.ini >/dev/null 2>&1" >> /etc/cron.d/ckan-cron
