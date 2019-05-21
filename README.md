@@ -25,4 +25,3 @@ odpkg-dockerは、CKANを使ったオープンデータサイトのためのパ�
 ### サポート
 本パッケージの利用に関するご質問などは、[BODIK](http://odcs.bodik.jp/)よりお問い合わせください。
 
-### Copyright and Licenses
