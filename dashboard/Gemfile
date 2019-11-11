@@ -52,6 +52,8 @@ gem 'dry-validation', '0.13.0'
 
 gem 'dry-inflector', '0.1.2'
 
+gem 'dry-equalizer', '0.2.2'
+
 # Additional gems
 gem 'config'
 #gem 'rack-cors', :require => 'rack/cors'
