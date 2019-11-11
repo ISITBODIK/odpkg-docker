@@ -4,6 +4,13 @@ FROM phusion/baseimage:0.9.19
 MAINTAINER Open Knowledge
 
 # Install required system packages
+
+RUN apt-get -q -y update \
+    && apt-get -q -o Dpkg::Options::="--force-confnew" install util-linux
+
+RUN apt-get -q -y update \
+    && apt-get -q -y upgrade
+
 RUN apt-get -q -y update \
     && DEBIAN_FRONTEND=noninteractive apt-get -q -y upgrade \
     && apt-get -q -y install \
