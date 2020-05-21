@@ -49,3 +49,7 @@ sudo chmod -R 777 /opt/odpkg/ckan/data
 
 echo "change ckan map data"
 sudo patch -st ./ckan/ckan/ckanext/reclineview/theme/public/vendor/recline/recline.js ckan/ckan.patch
+
+echo "fix datapusher requirement.txt"
+echo "werkzeug==0.16.0" >> datapusher/datapusher/requirements.txt
+
